@@ -1,0 +1,123 @@
+<%- include("partials/header.ejs") %>
+
+<main class="py-5 mt-5">
+    <div class="container">
+        <div class="row justify-content-center m-0">
+            <div class="card shadow-sm p-4 mb-4" style="max-width: 500px;">
+                <form id="weather-form" action="/submit" method="POST">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="latitudeInput" name="latitude" placeholder="Enter latitude" required>
+                        <label for="latitudeInput">Latitude</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="longitudeInput" name="longitude" placeholder="Enter longitude" required>
+                        <label for="longitudeInput">Longitude</label>
+                    </div>
+                    <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Get Weather Data</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row justify-content-center m-0">
+            <div class="weather-info d-flex flex-column justify-content-center align-items-center">
+                <% if (content) { %>
+                    <h2 class="mb-3">Weather Information:</h2>
+                    <div class="card w-100 mb-3" style="max-width: 500px;">
+                        <div class="card-body">
+                            <p class="card-text fs-5"><%= content.name %>, <%= content.sys.country %></p>
+                            <div class="d-flex justify-content-between align-items-center gap-5">
+                                <div class="d-flex gap-2">
+                                    <h5 class="card-title display-5 fw-bold"><%= Math.round(content.main.temp) %>°C</h5>
+                                    <div class="d-flex flex-column">
+                                        <p class="card-text mb-0">↑<%= Math.round(content.main.temp_min) %>°C / ↓<%= Math.round(content.main.temp_max) %>°C</p>
+                                        <p class="card-text">Feels like <%= Math.round(content.main.feels_like) %>°C.</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <!-- The weather property from OpenWeather API is an array, not a direct object.
+                                    That’s why 'content.weather.main' or 'content.weather.description' did not work -->
+                                    <img class="img-fluid" src="https://openweathermap.org/img/wn/<%= content.weather[0].icon %>@2x.png" alt="<%= content.weather[0].description %>">
+                                </div>
+                            </div>
+                            <div>
+                                <p class="card-text"><%= content.weather[0].description.charAt(0).toUpperCase() + content.weather[0].description.slice(1) %>. Low <%= Math.round(content.main.temp_min) %>°C.</p>
+                            </div>
+                            <div class="d-flex justify-content-between text-center gap-3 mt-3">
+                                <div class="card w-100">
+                                    <div class="card-body">
+                                        <i class="bi bi-wind"></i>
+                                        <h6>Wind</h6>
+                                        <p class="card-text">
+                                            <strong>Speed:</strong> <%= content.wind.speed %>m/s <br>
+                                            <strong>Direction:</strong> <%= content.wind.deg %>° <i class="bi bi-arrow-up" style="transform: rotate(<%= content.wind.deg %>deg);"></i> <%= wind(content.wind.deg) %> <br>
+                                            <% if (content.wind.gust) { %>
+                                                <strong>Gust:</strong> <%= content.wind.gust %>m/s
+                                            <% } else { %>
+                                                <p class="card-text">No gust.</p>
+                                            <% } %>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between text-center gap-3 mt-3">
+                                <div class="card w-100">
+                                    <div class="card-body">
+                                        <h6><i class="bi bi-droplet"></i> Humidity</h6>
+                                        <p class="card-text"><%= content.main.humidity %>%</p>
+                                    </div>
+                                </div>
+                                <div class="card w-100">
+                                    <div class="card-body">
+                                        <h6><i class="bi bi-speedometer2"></i> Pressure</h6>
+                                        <p class="card-text"><%= content.main.pressure %>hPa</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between text-center gap-3 mt-3">
+                                <div class="card w-100">
+                                    <div class="card-body">
+                                        <h6><i class="bi bi-eye"></i> Visibility</h6>
+                                        <p class="card-text"><%= content.visibility %>km</p>
+                                    </div>
+                                </div>
+                                <div class="card w-100">
+                                    <div class="card-body">
+                                        <h6><i class="bi bi-clouds"></i> Cloudiness</h6>
+                                        <p class="card-text"><%= content.clouds.all %>%</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between text-center gap-3 mt-3">
+                                <div class="card w-100">
+                                    <div class="card-body">
+                                        <h6>Sunrise</h6>
+                                        <p class="card-text"><%= new Date(content.sys.sunrise * 1000).toLocaleTimeString() %></p>
+                                    </div>
+                                </div>
+                                <div class="card w-100">
+                                    <div class="card-body">
+                                        <h6>Sunset</h6>
+                                        <p class="card-text"><%= new Date(content.sys.sunset * 1000).toLocaleTimeString() %></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 'dt' is a Unix timestamp - the number of seconds since January 1, 1970.
+                    I've converted it into a human-readable format -->
+                    <p class="card-text mt-3">
+                        <small>Updated on: <%= new Date(content.dt * 1000).toLocaleString() %></small>
+                    </p>
+                <% } else { %>
+                    <div class="alert alert-warning">
+                        No weather data available.
+                    </div>
+                <% } %>
+                <small>Powered by <span><img class="img-fluid" style="max-width: 100px;" src="images/open-weather.png" alt=""></span></small>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include("partials/footer.ejs") %>

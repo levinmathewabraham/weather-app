@@ -70,7 +70,10 @@ app.post("/submit", async(req, res) => {
             content: response.data,
             windDirection: getWindDirection,
             windType: getWindType,
+            // 'dt' is a Unix timestamp - the number of seconds since January 1, 1970. It has been converted into a human-readable format.
+            // Multiply by 1000 to convert seconds to ms.
             currentTime: response.data.dt * 1000,
+            //'sys.sunrise' and 'sys.sunset' uses Unix timestamps. Hence, the need for conversion.
             sunrise: response.data.sys.sunrise * 1000,
             sunset: response.data.sys.sunset * 1000,
         });

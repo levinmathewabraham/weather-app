@@ -141,10 +141,8 @@
                             </div>
                         </div>
                     </div>
-                    <!-- 'dt' is a Unix timestamp - the number of seconds since January 1, 1970.
-                    I've converted it into a human-readable format -->
                     <p class="card-text mt-3">
-                        <small>Updated on: <%= new Date(content.dt * 1000).toLocaleString() %></small>
+                        <small>Updated on: <%= new Date(currentTime).toLocaleString() %></small>
                     </p>
                 <% } else { %>
                     <div class="alert alert-warning">
